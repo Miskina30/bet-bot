@@ -1,0 +1,23 @@
+=== push_to_github.py rc=0 ===
+collected 140 files (secrets/caches/venvs excluded)
+repo exists: Miskina30/bet-bot
+branch main exists
+  blobs 25/140
+  blobs 50/140
+  blobs 75/140
+  blobs 100/140
+  blobs 125/140
+  blobs 140/140
+tree created: d020dbf (140 entries)
+commit created: 8fc282f
+branch main now at 8fc282f
+verify: remote has 141 blobs; missing=0 extra=1
+  EXTRA(leftover on branch): .bootstrap
+DONE commit=8fc282fc3dcd2825a890b83f7671ba77631021be
+
+
+=== enable_pages.py rc=1 ===
+POST /pages -> 422
+{"message":"Your current plan does not support GitHub Pages for this repository.","documentation_url":"https://docs.github.com/rest/pages/pages#create-a-apiname-pages-site","status":"422"}
+
+
