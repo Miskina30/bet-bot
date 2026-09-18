@@ -1,0 +1,41 @@
+{
+  "name": "academic-edge-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Academic Edge analyst dashboard - read-only football market intelligence (no wagering, no bookmaker credentials).",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "next lint",
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed",
+    "e2e:report": "playwright show-report"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.64.2",
+    "@tanstack/react-table": "^8.21.2",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "next": "15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.7",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "15.1.6",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3"
+  }
+}

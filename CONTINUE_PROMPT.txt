@@ -1,0 +1,59 @@
+You are continuing an in-progress build of "Academic Edge" — a read-only football
+market-intelligence MVP. The project is on disk and largely built. Before doing anything
+else, read these two files IN THIS ORDER:
+
+  1. C:\Users\Anania Light Laptop\projects\academic-edge\HANDOFF.md
+     (compressed context: what exists, what's verified, what's missing, environment
+     constraints, run commands, and the exact open-work list)
+
+  2. The authoritative spec:
+     C:\Users\Anania Light Laptop\Downloads\academic-edge-agent-brief.md
+     (the original brief from the user; read it if HANDOFF.md references anything
+     you need to verify against)
+
+CRITICAL ENVIRONMENT FACTS (from HANDOFF.md, restated so you cannot miss them):
+- Windows, shell is PowerShell. Bash syntax (||, &&, head, find -name, wc) FAILS here.
+- Python 3.12 project venv: C:\Users\Anania Light Laptop\projects\academic-edge\.venv
+  → use: & .venv\Scripts\python.exe -m pytest -q  (64 tests, all passing)
+- Node.js / npm: NOT installed. Docker: NOT installed. git: NOT on PATH.
+- The Next.js dashboard (apps/web) has complete lib/ modules but pages are partial.
+- The Python backend (packages/ + apps/api + apps/worker) is substantially complete.
+
+SECURITY / CREDENTIALS (non-negotiable):
+- The user's Gmail credentials were pasted in cleartext in a previous chat. They are
+  NOT in this repo and must never be written to any file. The user must rotate that
+  password and enable 2FA. Provider API keys (API-Football, football-data.org) go in
+  .env only. Without keys the system runs in labelled FIXTURE mode (synthetic).
+- Crocobet web automation is hard-refused at settings load, policy layer, and CI.
+- No wagering, no wallet signing, no bookmaker credentials, ever.
+
+YOUR IMMEDIATE NEXT STEPS (in order, from HANDOFF.md "OPEN WORK" section):
+1. Finish apps/web/src/app/sources/page.tsx — it is HALF-WRITTEN (chunk 1 only:
+   imports + query + state variables exist, but the render JSX was never appended).
+   The render body needs: SectionPanel with the health table, degraded-source banner,
+   EmptyBlock when no sources, and the one-paragraph runbook. Look at
+   apps/web/src/app/page.tsx for the exact component/style patterns to follow.
+2. Create the remaining Next.js pages: alerts/page.tsx, resolver/page.tsx,
+   predictions/page.tsx, ledger/page.tsx, opportunities/[id]/page.tsx (detail view),
+   and the analyst-proxy API route handlers
+   (src/app/api/alerts/[id]/acknowledge/route.ts and
+    src/app/api/resolver/[id]/decision/route.ts).
+3. Create shared components: components/FreshnessBadge.tsx, components/DataTable.tsx,
+   components/ThemeToggle.tsx, components/SourceChip.tsx, components/EvidencePanel.tsx.
+4. Create apps/worker/academic_edge_worker/pipeline.py (the ingest pipeline:
+   scenario→archive→normalize→resolve→quote snapshots→opportunities→alerts→ledger,
+   all deterministic/in-memory) and archive.py, jobs.py, scheduler.py.
+5. Create tests/leakage/ (point-in-time guard: strength.py raises on future-dated
+   observations) and tests/integration/ (worker pipeline end-to-end).
+6. Create e2e/dashboard.spec.ts + playwright.config.ts (cannot run without Node,
+   but write correct code and flag it).
+7. Update README.md delivery-order section to match actual status.
+
+VERIFY AFTER EACH SLICE:
+  & .venv\Scripts\python.exe -m pytest -q
+  & .venv\Scripts\python.exe -m ruff check .
+Both must stay green. Report changed files and blockers.
+
+To re-create the portable archive when done:
+  cd C:\Users\Anania Light Laptop\projects\academic-edge
+  tar.exe -a -c -f "$HOME\Downloads\academic-edge-portable.zip" --exclude '.venv' --exclude '.data' --exclude '__pycache__' --exclude '.pytest_cache' --exclude '.ruff_cache' --exclude '.hypothesis' --exclude 'test-results' .

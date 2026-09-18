@@ -1,0 +1,6 @@
+event_name,kickoff_utc,home_team,away_team,market,selection,odds,currency,exported_at
+Man Utd vs Man City,2026-03-14T15:00:00Z,Manchester Utd,Man City,Match Winner,Home,2.25,EUR,2026-03-13T10:00:00Z
+Man Utd vs Man City,2026-03-14T15:00:00Z,Manchester Utd,Man City,Match Winner,Draw,3.40,EUR,2026-03-13T10:00:00Z
+Man Utd vs Man City,2026-03-14T15:00:00Z,Manchester Utd,Man City,Match Winner,Away,3.10,EUR,2026-03-13T10:00:00Z
+Inter vs Juventus,2026-03-14T17:30:00Z,Inter,Juventus,Both Teams Score,Yes,1.80,EUR,2026-03-13T10:00:00Z
+Inter vs Juventus,2026-03-14T17:30:00Z,Inter,Juventus,Both Teams Score,No,2.00,EUR,2026-03-13T10:00:00Z

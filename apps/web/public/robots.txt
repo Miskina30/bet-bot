@@ -1,0 +1,5 @@
+# Academic Edge dashboard: not indexed. This is an internal analyst tool that
+# surfaces licensed third-party data (see config/source_policies.yaml for the
+# per-source licences) and it must not be crawled or republished.
+User-agent: *
+Disallow: /

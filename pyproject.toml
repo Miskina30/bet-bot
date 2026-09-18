@@ -1,0 +1,134 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "academic-edge"
+version = "0.1.0"
+description = "Read-only football market-intelligence MVP: permitted ingest, canonical resolution, market comparison, arbitrage + model-vs-market EV, evidence-rich alerts."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Proprietary" }
+authors = [{ name = "Academic Edge" }]
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pydantic>=2.9",
+  "pydantic-settings>=2.5",
+  "sqlalchemy>=2.0.35",
+  "alembic>=1.13",
+  "httpx>=0.27",
+  "psycopg[binary]>=3.2",
+  "python-multipart>=0.0.9",
+  "redis>=5.0",
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+ml = ["numpy>=1.26", "pandas>=2.2", "scipy>=1.13", "scikit-learn>=1.5", "statsmodels>=0.14"]
+worker = ["dramatiq[redis]>=1.17", "APScheduler>=3.10"]
+s3 = ["boto3>=1.34"]
+dev = [
+  "pytest>=8.3",
+  "pytest-asyncio>=0.24",
+  "hypothesis>=6.112",
+  "freezegun>=1.5",
+  "ruff>=0.6",
+  "mypy>=1.11",
+  "pre-commit>=3.8",
+  "playwright>=1.47",
+]
+
+# ---------------------------------------------------------------------------
+# The repository layout mirrors the brief exactly (apps/ + packages/), and each
+# leaf directory below is an independently importable package. Listing them
+# explicitly keeps `pip install -e .` deterministic (no namespace magic).
+# ---------------------------------------------------------------------------
+[tool.setuptools]
+packages = [
+  "academic_edge_domain",
+  "academic_edge_connectors",
+  "academic_edge_resolver",
+  "academic_edge_pricing",
+  "academic_edge_features",
+  "academic_edge_forecasting",
+  "academic_edge_api",
+  "academic_edge_api.routers",
+  "academic_edge_worker",
+]
+
+[tool.setuptools.package-dir]
+academic_edge_domain = "packages/domain/academic_edge_domain"
+academic_edge_connectors = "packages/connectors/academic_edge_connectors"
+academic_edge_resolver = "packages/resolver/academic_edge_resolver"
+academic_edge_pricing = "packages/pricing/academic_edge_pricing"
+academic_edge_features = "packages/features/academic_edge_features"
+academic_edge_forecasting = "packages/forecasting/academic_edge_forecasting"
+academic_edge_api = "apps/api/academic_edge_api"
+"academic_edge_api.routers" = "apps/api/academic_edge_api/routers"
+academic_edge_worker = "apps/worker/academic_edge_worker"
+
+[tool.setuptools.package-data]
+academic_edge_domain = ["py.typed", "config/*.yaml"]
+
+# ---------------------------------------------------------------------------
+# Test / lint / type configuration
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-q --strict-markers --strict-config"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+  "contract: provider contract tests against frozen payloads",
+  "golden: matcher golden set incl. adversarial false positives",
+  "property: hypothesis property tests",
+  "leakage: point-in-time leakage / walk-forward checks",
+  "e2e: Playwright end-to-end (requires a running web app)",
+]
+pythonpath = [
+  ".",
+  "apps/api",
+  "apps/worker",
+  "packages/domain",
+  "packages/connectors",
+  "packages/resolver",
+  "packages/pricing",
+  "packages/features",
+  "packages/forecasting",
+]
+filterwarnings = ["error::DeprecationWarning:academic_edge.*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["apps", "packages", "tests", "migrations", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "RET", "PTH", "TID", "RUF"]
+ignore = [
+  "B008",   # FastAPI Depends() in defaults is the documented pattern
+  "RUF001", # allow typographic characters in user-facing strings
+  "RUF002",
+  "RUF003",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["E501", "S101", "B011"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+plugins = ["pydantic.mypy"]
+files = ["packages", "apps/api/academic_edge_api", "apps/worker/academic_edge_worker"]
+exclude = ["migrations/versions"]
+
+[[tool.mypy.overrides]]
+module = ["academic_edge_forecasting.*"]
+# scipy/statsmodels/pandas are optional extras in the local profile.
+disallow_untyped_calls = false
+
+[[tool.mypy.overrides]]
+module = ["boto3.*", "dramatiq.*", "apscheduler.*", "scipy.*", "statsmodels.*", "sklearn.*", "pandas.*"]
+ignore_missing_imports = true

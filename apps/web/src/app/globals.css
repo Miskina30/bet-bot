@@ -1,0 +1,174 @@
+/* ==========================================================================
+   Academic Edge dashboard - global styles.
+
+   Tailwind 3 layers only (see postcss.config.mjs). Everything analyst-facing is
+   built from these tokens plus a handful of `.panel` / `.chip` / `.btn` classes,
+   so light and dark stay in step and there is no decorative imagery anywhere.
+
+   README (web app): see apps/web/README.md
+   ========================================================================== */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---- Semantic tokens (RGB triples so Tailwind's alpha syntax works) ------- */
+@layer base {
+  :root {
+    --ae-surface: 248 250 252;
+    --ae-surface-raised: 255 255 255;
+    --ae-surface-sunken: 241 245 249;
+    --ae-line: 203 213 225;
+    --ae-ink: 15 23 42;
+    --ae-ink-muted: 71 85 105;
+    --ae-ink-subtle: 100 116 139;
+    --ae-accent: 30 64 175;
+    --ae-accent-soft: 219 234 254;
+    --ae-positive: 21 128 61;
+    --ae-positive-soft: 220 252 231;
+    --ae-caution: 161 98 7;
+    --ae-caution-soft: 254 249 195;
+    --ae-danger: 185 28 28;
+    --ae-danger-soft: 254 226 226;
+  }
+
+  .dark {
+    --ae-surface: 11 15 25;
+    --ae-surface-raised: 20 26 38;
+    --ae-surface-sunken: 8 11 19;
+    --ae-line: 51 65 85;
+    --ae-ink: 226 232 240;
+    --ae-ink-muted: 148 163 184;
+    --ae-ink-subtle: 125 138 158;
+    --ae-accent: 147 197 253;
+    --ae-accent-soft: 23 37 84;
+    --ae-positive: 134 239 172;
+    --ae-positive-soft: 6 44 26;
+    --ae-caution: 253 224 71;
+    --ae-caution-soft: 60 46 8;
+    --ae-danger: 252 165 165;
+    --ae-danger-soft: 68 20 20;
+  }
+
+  * {
+    @apply border-line;
+  }
+
+  html {
+    @apply bg-surface text-ink;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply min-h-screen bg-surface font-sans text-sm antialiased;
+  }
+
+  /* Keyboard-first: every interactive element gets a visible ring. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-surface;
+  }
+
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  /* Numbers are compared column-wise, so they must not shift width. */
+  td,
+  th {
+    font-variant-numeric: tabular-nums;
+  }
+
+  summary {
+    @apply cursor-pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+/* ---- Reusable primitives ------------------------------------------------ */
+@layer components {
+  .panel {
+    @apply rounded-lg border border-line bg-surface-raised shadow-sm;
+  }
+
+  .panel-header {
+    @apply flex flex-wrap items-baseline justify-between gap-2 border-b border-line px-4 py-3;
+  }
+
+  .panel-title {
+    @apply text-sm font-semibold tracking-tight text-ink;
+  }
+
+  .panel-subtitle {
+    @apply text-2xs text-ink-muted;
+  }
+
+  .panel-body {
+    @apply px-4 py-3;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-line bg-surface-sunken px-2 py-0.5 text-2xs font-medium text-ink-muted;
+  }
+
+  .chip-positive {
+    @apply border-transparent bg-positive-soft text-positive;
+  }
+
+  .chip-caution {
+    @apply border-transparent bg-caution-soft text-caution;
+  }
+
+  .chip-danger {
+    @apply border-transparent bg-danger-soft text-danger;
+  }
+
+  .chip-accent {
+    @apply border-transparent bg-accent-soft text-accent;
+  }
+
+  .mono {
+    @apply font-mono text-2xs;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-1 rounded-md border border-line bg-surface-raised px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply border-transparent bg-accent text-surface-raised hover:opacity-90;
+  }
+
+  .btn-quiet {
+    @apply border-transparent bg-transparent text-ink-muted hover:bg-surface-sunken hover:text-ink;
+  }
+
+  .field {
+    @apply rounded-md border border-line bg-surface-raised px-2 py-1.5 text-xs text-ink;
+  }
+
+  .label {
+    @apply text-2xs font-medium uppercase tracking-wide text-ink-subtle;
+  }
+
+  .th {
+    @apply whitespace-nowrap px-3 py-2 text-left text-2xs font-semibold uppercase tracking-wide text-ink-subtle;
+  }
+
+  .td {
+    @apply border-t border-line px-3 py-2 align-top text-xs text-ink;
+  }
+
+  .skip-link {
+    @apply absolute left-2 top-2 z-50 -translate-y-16 rounded-md bg-accent px-3 py-2 text-xs font-semibold text-surface-raised transition-transform focus:translate-y-0;
+  }
+}

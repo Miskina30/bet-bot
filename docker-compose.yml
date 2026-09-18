@@ -1,0 +1,118 @@
+# ===========================================================================
+# Academic Edge - local development stack.
+#
+# The API and worker also run WITHOUT Docker against SQLite + a filesystem raw
+# archive (see README "Local keyless profile"); Compose is the production-
+# shaped path that matches the brief (Postgres 16, Redis, MinIO for raw
+# payloads). No bookmaker credentials are ever mounted into these services.
+# ===========================================================================
+name: academic-edge
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: academic_edge
+      POSTGRES_PASSWORD: academic_edge
+      POSTGRES_DB: academic_edge
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U academic_edge -d academic_edge"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    image: minio/minio:latest
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: academic_edge
+      MINIO_ROOT_PASSWORD: academic_edge
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/api.Dockerfile
+    env_file: [.env]
+    environment:
+      ACADEMIC_EDGE_ENV: production
+      DATABASE_URL: postgresql+psycopg://academic_edge:academic_edge@postgres:5432/academic_edge
+      REDIS_URL: redis://redis:6379/0
+      RAW_ARCHIVE_BACKEND: s3
+      S3_ENDPOINT_URL: http://minio:9000
+      S3_BUCKET: academic-edge-raw
+      AWS_ACCESS_KEY_ID: academic_edge
+      AWS_SECRET_ACCESS_KEY: academic_edge
+      AWS_DEFAULT_REGION: eu-central-1
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    command: ["sh", "-c", "alembic upgrade head && uvicorn academic_edge_api.main:app --host 0.0.0.0 --port 8000"]
+
+  worker:
+    build:
+      context: .
+      dockerfile: infra/docker/api.Dockerfile
+    env_file: [.env]
+    environment:
+      ACADEMIC_EDGE_ENV: production
+      DATABASE_URL: postgresql+psycopg://academic_edge:academic_edge@postgres:5432/academic_edge
+      REDIS_URL: redis://redis:6379/0
+      RAW_ARCHIVE_BACKEND: s3
+      S3_ENDPOINT_URL: http://minio:9000
+      S3_BUCKET: academic-edge-raw
+      AWS_ACCESS_KEY_ID: academic_edge
+      AWS_SECRET_ACCESS_KEY: academic_edge
+      AWS_DEFAULT_REGION: eu-central-1
+      CROCOBET_WEB_ENABLED: "false"
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    command: ["python", "-m", "academic_edge_worker.cli", "run-schedule"]
+
+  web:
+    build:
+      context: apps/web
+      dockerfile: ../../infra/docker/web.Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      ACADEMIC_EDGE_API_KEY: reader-key
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:

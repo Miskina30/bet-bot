@@ -1,0 +1,137 @@
+# Academic Edge - source policy registry.
+#
+# Every connector MUST have an entry here. `automation_allowed` gates code paths:
+# an adapter whose `automation_allowed` is false can only be used in
+# fixture/manual mode, and the registry refuses to build a live client for it.
+#
+# REVIEW NOTE (MVP): no source below sells "guaranteed profit" and none is used
+# to place a bet. Academic Edge is read-only. Historical prices are used for
+# research and backtesting only; check each provider's current terms before
+# production use, because terms change and this file must be re-reviewed.
+
+version: 1
+sources:
+  - source_id: api_football
+    display_name: API-Football (api-sports.io)
+    vendor_url: https://www.api-football.com/
+    docs_url: https://www.api-football.com/documentation-v3
+    tier: free
+    license: "Vendor ToS - personal/internal use; redistribution of raw data prohibited"
+    auth: api_key_header
+    quota_notes: "Free plan: 100 requests/day, 10 requests/minute (verify in dashboard)"
+    automation_allowed: true
+    automation_scope: official_api_only
+    rate_limit_per_minute: 10
+    terms_reviewed_by: null
+    terms_reviewed_at: null
+    enabled_by_default: true
+    data_classes: [fixtures, results, lineups, injuries, in_play_prices]
+    notes: "Primary live/odds source. Key is optional: without it the adapter serves labelled fixtures."
+
+  - source_id: football_data_org
+    display_name: football-data.org
+    vendor_url: https://www.football-data.org/
+    docs_url: https://www.football-data.org/documentation/quickstart
+    tier: free
+    license: "Free tier, non-commercial; attribution required"
+    auth: bearer_token
+    quota_notes: "Free tier: 10 requests/minute, 12 competitions (verify)"
+    automation_allowed: true
+    automation_scope: official_api_only
+    rate_limit_per_minute: 10
+    terms_reviewed_by: null
+    terms_reviewed_at: null
+    enabled_by_default: true
+    data_classes: [competitions, fixtures, results, standings]
+    notes: "Secondary event/identity source used for cross-provider resolution."
+
+  - source_id: polymarket_gamma
+    display_name: Polymarket (Gamma API)
+    vendor_url: https://polymarket.com/
+    docs_url: https://docs.polymarket.com/
+    tier: public_read
+    license: "Public read endpoints; no account required for discovery/last-trade-price"
+    auth: none
+    quota_notes: "Undocumented; stay well under a few requests/second and cache aggressively"
+    automation_allowed: true
+    automation_scope: documented_public_reads
+    rate_limit_per_minute: 60
+    terms_reviewed_by: null
+    terms_reviewed_at: null
+    enabled_by_default: true
+    data_classes: [event_discovery, markets, prices]
+    notes: "Prediction-market venue. Treated as one more venue, NEVER as ground truth."
+
+  - source_id: polymarket_clob
+    display_name: Polymarket (CLOB + WebSocket)
+    vendor_url: https://polymarket.com/
+    docs_url: https://docs.polymarket.com/developers/CLOB/introduction
+    tier: public_read
+    license: "Public read endpoints"
+    auth: none
+    quota_notes: "WebSocket subscription; reconnect with jittered backoff"
+    automation_allowed: true
+    automation_scope: documented_public_reads
+    rate_limit_per_minute: 120
+    terms_reviewed_by: null
+    terms_reviewed_at: null
+    enabled_by_default: true
+    data_classes: [order_book, market_price_history]
+    notes: "Read-only. No order placement, no wallet signing in the MVP."
+
+  - source_id: football_data_uk
+    display_name: Football-Data.co.uk (historical CSV)
+    vendor_url: https://www.football-data.co.uk/
+    docs_url: https://www.football-data.co.uk/notes.txt
+    tier: public
+    license: "Public CSV downloads; check site notes for attribution/usage terms"
+    auth: none
+    quota_notes: "Static files; cache to disk and refresh at most daily"
+    automation_allowed: true
+    automation_scope: bulk_static_download
+    rate_limit_per_minute: 6
+    terms_reviewed_by: null
+    terms_reviewed_at: null
+    enabled_by_default: true
+    data_classes: [historical_results, closing_odds]
+    notes: "Backbone of the historical loader and walk-forward validation."
+
+  - source_id: crocobet
+    display_name: Crocobet
+    vendor_url: https://crocobet.com/
+    docs_url: null
+    tier: manual
+    license: "No public API. Manual CSV export provided by the operator only."
+    auth: manual_csv
+    quota_notes: "n/a - operator-supplied exports"
+    automation_allowed: false
+    automation_scope: manual_csv_only
+    rate_limit_per_minute: 0
+    terms_reviewed_by: null
+    terms_reviewed_at: null
+    enabled_by_default: true
+    data_classes: [odds]
+    notes: >-
+      HARD GATE: web/HTML automation must remain disabled (CROCOBET_WEB_ENABLED=false)
+      until a human records permission/terms review here AND in an AuditLog entry.
+      The registry raises PolicyViolation if a web client is requested before then.
+
+  - source_id: fixture
+    display_name: Labelled frozen fixtures (no network)
+    vendor_url: null
+    docs_url: null
+    tier: synthetic
+    license: "Project-owned test fixtures - clearly labelled, never presented as live"
+    auth: none
+    quota_notes: "n/a"
+    automation_allowed: true
+    automation_scope: local_fixtures
+    rate_limit_per_minute: 0
+    terms_reviewed_by: academic-edge-team
+    terms_reviewed_at: "2026-01-01T00:00:00Z"
+    enabled_by_default: true
+    data_classes: [all]
+    notes: >-
+      Synthetic data used to demo and test the pipeline when provider keys are
+      absent. Every record created from this source is tagged with
+      is_synthetic=true and surfaced as such in the UI.

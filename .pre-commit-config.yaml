@@ -1,0 +1,53 @@
+# Academic Edge pre-commit hooks.
+#
+# Two of these are safety hooks, not style hooks: no committed .env / private
+# keys, and no wagering or wallet code anywhere in the tree.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=2048"]
+      - id: detect-private-key
+      - id: forbid-submodules
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.0
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: forbid-dotenv
+        name: refuse to commit .env files
+        entry: bash -c 'for f in "$@"; do case "$(basename "$f")" in .env|.env.*) if [ "$(basename "$f")" != ".env.example" ]; then echo "Refusing to commit $f - secrets must never be committed."; exit 1; fi;; esac; done' --
+        language: system
+        files: '(^|/)\.env(\..+)?$'
+
+      - id: forbid-wagering-code
+        name: read-only guard (no wagering or wallet code)
+        entry: bash -c 'if grep -rnEI "(place_bet|place_order|submit_order|sign_transaction|withdraw_funds|wallet_private_key)" --include="*.py" --include="*.ts" --include="*.tsx" . ; then echo "Academic Edge is read-only: no wagering or wallet code."; exit 1; fi'
+        language: system
+        pass_filenames: false
+        types_or: [python, ts, tsx]
+
+      - id: crocobet-web-disabled
+        name: Crocobet web automation must stay disabled
+        entry: bash -c 'grep -rn "CROCOBET_WEB_ENABLED" --include="*.py" --include="*.yml" --include="*.yaml" . | grep -i "true" && { echo "CROCOBET_WEB_ENABLED=true is not permitted until a terms review is recorded."; exit 1; }; exit 0'
+        language: system
+        pass_filenames: false
+
+      - id: mypy
+        name: mypy (strict)
+        entry: mypy
+        language: system
+        pass_filenames: false
+        files: '\.py$'
