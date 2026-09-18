@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Academic Edge — read-only market intelligence (static preview)</title>
+<style>
+  :root{
+    --surface:248 250 252; --raised:255 255 255; --sunken:241 245 249;
+    --line:203 213 225; --ink:15 23 42; --muted:71 85 105; --subtle:100 116 139;
+    --accent:30 64 175; --accent-soft:219 234 254;
+    --positive:21 128 61; --positive-soft:220 252 231;
+    --caution:161 98 7; --caution-soft:254 249 195;
+    --danger:185 28 28; --danger-soft:254 226 226;
+  }
+  [data-theme="dark"]{
+    --surface:11 15 25; --raised:20 26 38; --sunken:8 11 19;
+    --line:51 65 85; --ink:226 232 240; --muted:148 163 184; --subtle:125 138 158;
+    --accent:147 197 253; --accent-soft:23 37 84;
+    --positive:134 239 172; --positive-soft:6 44 26;
+    --caution:253 224 71; --caution-soft:60 46 8;
+    --danger:252 165 165; --danger-soft:68 20 20;
+  }
+  *{box-sizing:border-box;border-color:rgb(var(--line))}
+  body{margin:0;min-height:100vh;background:rgb(var(--surface));color:rgb(var(--ink));
+    font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;antialiased:true}
+  a{color:rgb(var(--accent))}
+  header{border-bottom:1px solid rgb(var(--line));background:rgb(var(--raised))}
+  .wrap{max-width:1400px;margin:0 auto;padding:12px 16px}
+  .brand{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .brand b{font-size:14px;letter-spacing:-.01em}
+  nav{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin-top:6px}
+  nav button{background:none;border:0;color:rgb(var(--muted));cursor:pointer;padding:2px 0;font:inherit}
+  nav button:hover{color:rgb(var(--ink));text-decoration:underline}
+  nav button[aria-current="true"]{color:rgb(var(--ink));font-weight:600;border-bottom:2px solid rgb(var(--accent))}
+  main{padding:20px 0 40px}
+  .panel{border:1px solid rgb(var(--line));background:rgb(var(--raised));border-radius:10px;
+    box-shadow:0 1px 2px rgb(0 0 0/.04);margin-bottom:16px;overflow:hidden}
+  .panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    flex-wrap:wrap;border-bottom:1px solid rgb(var(--line));padding:12px 16px}
+  .panel-head h2{margin:0;font-size:14px}
+  .panel-head p{margin:2px 0 0;font-size:11px;color:rgb(var(--muted))}
+  .panel-body{padding:12px 16px}
+  table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
+  th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.04em;
+    color:rgb(var(--subtle));padding:8px;border-bottom:1px solid rgb(var(--line));white-space:nowrap}
+  td{padding:8px;border-bottom:1px solid rgb(var(--line));vertical-align:top;
+    font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:0}
+  .num{text-align:right}
+  .chip{display:inline-flex;align-items:center;gap:4px;border:1px solid rgb(var(--line));
+    background:rgb(var(--sunken));color:rgb(var(--muted));border-radius:999px;
+    padding:1px 7px;font-size:10px;font-weight:600;white-space:nowrap}
+  .ok{background:rgb(var(--positive-soft));color:rgb(var(--positive));border-color:transparent}
+  .warn{background:rgb(var(--caution-soft));color:rgb(var(--caution));border-color:transparent}
+  .bad{background:rgb(var(--danger-soft));color:rgb(var(--danger));border-color:transparent}
+  .acc{background:rgb(var(--accent-soft));color:rgb(var(--accent));border-color:transparent}
+  .banner{border:1px solid rgb(var(--accent));background:rgb(var(--accent-soft));
+    color:rgb(var(--accent));border-radius:10px;padding:10px 14px;font-size:12px;margin-bottom:16px}
+  .banner.warn{border-color:rgb(var(--caution));background:rgb(var(--caution-soft));color:rgb(var(--caution))}
+  .muted{color:rgb(var(--muted))}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px}
+  ul.reasons{margin:0;padding-left:16px;font-size:11px;color:rgb(var(--caution))}
+  footer{border-top:1px solid rgb(var(--line));background:rgb(var(--raised));
+    color:rgb(var(--muted));font-size:11px}
+  .hidden{display:none}
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:11px;color:rgb(var(--muted))}
+  button.btn{border:1px solid rgb(var(--line));background:rgb(var(--raised));color:rgb(var(--ink));
+    border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer}
+  button.btn:hover{background:rgb(var(--sunken))}
+  select,input{border:1px solid rgb(var(--line));background:rgb(var(--raised));color:rgb(var(--ink));
+    border-radius:6px;padding:4px 8px;font-size:11px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <b>Academic Edge</b>
+      <span class="chip">read-only</span>
+      <span class="chip acc">static preview</span>
+    </div>
+    <nav id="nav" aria-label="Sections"></nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="banner">
+    <strong>Static preview on GitHub Pages.</strong> This is a rendered snapshot of the
+    analyst dashboard using <strong>labelled synthetic fixture data</strong>. GitHub Pages
+    serves static files only, so the Python API is not running here. Nothing on this page is
+    a live market price, and nothing here places a bet.
+  </div>
+  <div class="banner warn hidden" id="fixtureBanner">
+    <strong>Synthetic fixtures.</strong> No live provider credentials are configured in this
+    deployment; every row is demo data.
+  </div>
+  <section id="view"></section>
+</main>
+<footer>
+  <div class="wrap">
+    Research tooling only. Academic Edge never places bets, never signs wallets and never
+    stores bookmaker credentials. Full source and run instructions:
+    <a href="https://github.com/Miskina30/bet-bot">github.com/Miskina30/bet-bot</a>
+  </div>
+</footer>
+<script src="./fixtures.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>

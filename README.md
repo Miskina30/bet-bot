@@ -1,6 +1,26 @@
 environment variable, nothing is baked into an image, and the API/worker images
 run as a non-root user.
 
+## Quick start (no keys required)
+
+Full instructions, including the Docker profile and how to add live provider keys:
+**[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+.\.venv\Scripts\python.exe -m pytest -q          # 64 tests
+Copy-Item .env.example .env
+.\.venv\Scripts\python.exe -m alembic upgrade head
+.\.venv\Scripts\python.exe -m academic_edge_worker.cli seed
+.\.venv\Scripts\python.exe -m uvicorn academic_edge_api.main:app --reload --port 8000
+```
+
+**Static UI preview:** <https://miskina30.github.io/bet-bot/> — a rendered
+snapshot of the dashboard using labelled synthetic fixtures. GitHub Pages serves
+static files only, so the Python API is not running there; see
+[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for why, and for how to run the real stack.
+
 ## Repository layout
 
 ```

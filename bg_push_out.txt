@@ -1,0 +1,20 @@
+returncode=0
+---STDOUT TAIL---
+collected 130 files (secrets/caches/venvs excluded)
+repo exists: Miskina30/bet-bot
+branch main exists
+  blobs 25/130
+  blobs 50/130
+  blobs 75/130
+  blobs 100/130
+  blobs 125/130
+  blobs 130/130
+tree created: bf71a2b (130 entries)
+commit created: e0032ea
+branch main now at e0032ea
+verify: remote has 131 blobs; missing=0 extra=1
+  EXTRA(leftover on branch): .bootstrap
+DONE commit=e0032ea18a7a49bd74035189222fec9ca8447f12
+
+---STDERR TAIL---
+
