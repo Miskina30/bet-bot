@@ -1,3 +1,4 @@
+"""Push codebase + enable GitHub Pages. Token from scripts/.ghtoken.tmp."""
 import os
 import subprocess
 import sys
@@ -16,39 +17,31 @@ def main() -> int:
         env["GH_TOKEN"] = token
         out: list[str] = []
 
-        def run(script: str) -> int:
+        # verify token
+        verify = subprocess.run(
+            [sys.executable, "-c", (
+                "import os,httpx;"
+                "h={'Authorization':'Bearer '+os.environ['GH_TOKEN'],"
+                "'Accept':'application/vnd.github+json'};"
+                "r=httpx.get('https://api.github.com/user',headers=h,timeout=60);"
+                "print('auth ->',r.status_code,r.json().get('login'))"
+            )],
+            env=env, capture_output=True, text=True,
+        )
+        out.append(f"token check: {verify.stdout.strip()}")
+
+        if "200" not in out[-1]:
+            LOG.write_text("\n".join(out), encoding="utf-8")
+            print("\n".join(out))
+            print("Token rejected. Aborting.")
+            return 2
+
+        for script in ("push_to_github.py", "enable_pages.py"):
             proc = subprocess.run(
                 [sys.executable, str(ROOT / "scripts" / script)],
                 cwd=str(ROOT), env=env, capture_output=True, text=True,
             )
             out.append(f"=== {script} rc={proc.returncode} ===\n{proc.stdout[-5000:]}\n{proc.stderr[-2000:]}")
-            return proc.returncode
-
-        # 1. make the repo public so Pages can serve it
-        rc = subprocess.run(
-            [sys.executable, "-c", (
-                "import httpx,sys;"
-                "h={'Authorization':'Bearer '+os.environ['GH_TOKEN'],"
-                "'Accept':'application/vnd.github+json'};"
-                "r=httpx.patch('https://api.github.com/repos/Miskina30/bet-bot',"
-                "headers=h,json={'private':False,'description':'Academic Edge: read-only football market-intelligence MVP. Research only, no wagering. No secrets in the codebase.'},timeout=60);"
-                "print('repo patch ->',r.status_code,'private=',r.json().get('private'))"
-            )],
-            env=env, capture_output=True, text=True,
-        )
-        out.append(f"=== repo visibility rc={rc} ===\n{rc.stdout[-2000:]}\n{rc.stderr[-1000:]}")
-
-        rc = subprocess.run(
-            [sys.executable, str(ROOT / "scripts" / "push_to_github.py")],
-            cwd=str(ROOT), env=env, capture_output=True, text=True,
-        )
-        out.append(f"=== push_to_github.py rc={rc.returncode} ===\n{rc.stdout[-4000:]}\n{rc.stderr[-2000:]}")
-
-        rc = subprocess.run(
-            [sys.executable, str(ROOT / "scripts" / "enable_pages.py")],
-            cwd=str(ROOT), env=env, capture_output=True, text=True,
-        )
-        out.append(f"=== enable_pages.py rc={rc.returncode} ===\n{rc.stdout[-2000:]}\n{rc.stderr[-1000:]}")
 
         LOG.write_text("\n".join(out), encoding="utf-8")
         print("\n".join(out[-4000:]))

@@ -28,8 +28,8 @@ EXCLUDE_DIRS = {
     ".hypothesis", ".data", "node_modules", "test-results", "secrets",
     "raw-archive", ".mypy_cache",
 }
-EXCLUDE_SUFFIXES = (".pyc", ".pyo", ".log", ".db", ".sqlite3", ".pem", ".key")
-EXCLUDE_NAMES = {".env"}
+EXCLUDE_SUFFIXES = (".pyc", ".pyo", ".log", ".db", ".sqlite3", ".pem", ".key", ".tmp")
+EXCLUDE_NAMES = {".env", ".ghtoken.tmp", "set_token.ps1"}
 
 
 def should_skip(path: Path, root: Path) -> bool:

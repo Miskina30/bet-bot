@@ -34,3 +34,14 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - name: Pages not enabled notice
+        if: failure()
+        run: |
+          echo "::error title=GitHub Pages not enabled::"
+          echo "Enable it in Settings → Pages → Source: 'GitHub Actions'"
+          echo "The site/ directory will deploy on the next push."
+          echo "Site URL will be: https://miskina30.github.io/bet-bot/"
+          exit 0
+
+
