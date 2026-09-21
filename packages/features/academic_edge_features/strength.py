@@ -13,7 +13,8 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from academic_edge_domain.time import ensure_utc
-from academic_edge_features.form import FormTracker
+
+from academic_edge_features.form import FormRecord, FormTracker
 
 
 @dataclass(frozen=True, slots=True)
@@ -74,9 +75,7 @@ class FeatureBuilder:
             for r in results:
                 played_on = ensure_utc(dt.datetime.combine(r["played_on"], dt.time()))
                 _ensure_not_future(played_on, as_of=as_of_dt, label="historical result")
-            tracker = FormTracker(
-                half_life_days=self._half_life_days, cutoff_date=as_of_dt.date()
-            )
+            tracker = FormTracker(half_life_days=self._half_life_days, cutoff_date=as_of_dt.date())
             for r in results:
                 tracker.append(
                     FormRecord(
@@ -112,7 +111,12 @@ class FeatureBuilder:
         }
 
         missing: list[str] = []
-        for key in ("home_form_rolling", "away_form_rolling", "home_conceded_rolling", "away_conceded_rolling"):
+        for key in (
+            "home_form_rolling",
+            "away_form_rolling",
+            "home_conceded_rolling",
+            "away_conceded_rolling",
+        ):
             if features[key] == 0.0 and (results is None or not tracker._results):
                 missing.append(key)
 

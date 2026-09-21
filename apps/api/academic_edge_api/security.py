@@ -11,10 +11,10 @@ from __future__ import annotations
 
 from typing import Annotated
 
+from academic_edge_domain.enums import Role
 from fastapi import Depends, Header, HTTPException, Response, status
 
 from academic_edge_api.settings import Settings, get_settings
-from academic_edge_domain.enums import Role
 
 ROLE_RANK = {Role.READER: 1, Role.ANALYST: 2, Role.ADMIN: 3}
 DEV_MODE_HEADER = "X-Academic-Edge-Dev-Auth"

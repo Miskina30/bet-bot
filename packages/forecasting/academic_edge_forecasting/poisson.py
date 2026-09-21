@@ -20,7 +20,7 @@ DEFAULT_MAX_ITERATIONS = 500
 def _poisson_pmf(k: int, lam: float) -> float:
     if lam <= 0:
         return 1.0 if k == 0 else 0.0
-    return math.exp(-lam) * (lam ** k) / math.factorial(k)
+    return math.exp(-lam) * (lam**k) / math.factorial(k)
 
 
 def _dc_adjust(h: int, a: int, rho: float) -> float:
@@ -76,9 +76,7 @@ class PoissonModel:
             key = f"{r.home_team}|{r.away_team}|{r.played_on}"
             age = (now - r.played_on).days
             weights[key] = (
-                max(0.05, 0.5 ** (age / self.half_life_days))
-                if self.half_life_days > 0
-                else 1.0
+                max(0.05, 0.5 ** (age / self.half_life_days)) if self.half_life_days > 0 else 1.0
             )
         total_g, total_w = 0.0, 0.0
         for r in results:
@@ -161,5 +159,7 @@ class PoissonModel:
 
     def predict_totals(self, home: str, away: str, *, line: float = 2.5) -> dict[str, float]:
         m = self._score_matrix(home, away)
-        po = sum(m[h][a] for h in range(MAX_GOALS + 1) for a in range(MAX_GOALS + 1) if h + a > line)
+        po = sum(
+            m[h][a] for h in range(MAX_GOALS + 1) for a in range(MAX_GOALS + 1) if h + a > line
+        )
         return {"p_over": po, "p_under": 1.0 - po}

@@ -14,7 +14,6 @@ from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
 
 from academic_edge_api import __version__
 from academic_edge_api.deps import get_engine
@@ -65,7 +64,10 @@ def create_app() -> FastAPI:
         version=API_VERSION,
         openapi_tags=[
             {"name": "Catalog", "description": "Health, sources, events, markets, quotes."},
-            {"name": "Insights", "description": "Opportunities, review, predictions, alerts, ledger."},
+            {
+                "name": "Insights",
+                "description": "Opportunities, review, predictions, alerts, ledger.",
+            },
             {"name": "Stream", "description": "Server-Sent Events."},
         ],
     )

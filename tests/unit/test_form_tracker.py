@@ -8,8 +8,6 @@ from academic_edge_features.form import (
     FormRecord,
     FormTracker,
     decay_weight,
-    days_between,
-    rest_days,
 )
 
 

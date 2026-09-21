@@ -13,9 +13,8 @@ import datetime as dt
 import uuid
 from typing import Any, TypeVar
 
-from pydantic import BaseModel, Field
-
 from academic_edge_domain.ids import CursorError, decode_cursor, encode_cursor
+from pydantic import BaseModel, Field
 
 DEFAULT_PAGE_SIZE = 50
 MAX_PAGE_SIZE = 500

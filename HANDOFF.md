@@ -58,8 +58,8 @@ auto-accepts, connector contract tests incl. ParserDriftError on renamed vendor 
 
 ## OPEN WORK (next slices, in order)
 1. `apps/web/src/app/`: layout.tsx + components/StateBlocks.tsx DONE; page.tsx
-   (opportunity board) DONE; **sources/page.tsx is HALF-WRITTEN** (chunk 1 only —
-   render body never appended; finish it). Still missing: alerts/page.tsx,
+   (opportunity board) DONE; **sources/page.tsx DONE** (render body completed
+   2026-09-18). Still missing: alerts/page.tsx,
    resolver/page.tsx (+ [id]/decision), predictions/page.tsx, ledger/page.tsx,
    opportunities/[id]/page.tsx detail, analyst-proxy route handlers
    (api/alerts/[id]/acknowledge/route.ts, api/resolver/[id]/decision/route.ts),

@@ -6,13 +6,13 @@ from collections.abc import Iterator
 from functools import lru_cache
 from typing import Annotated
 
+from academic_edge_domain.db import build_engine, build_session_factory
+from academic_edge_domain.policy import SourcePolicyRegistry, load_registry
 from fastapi import Depends, Request
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
 from academic_edge_api.settings import Settings, get_settings
-from academic_edge_domain.db import build_engine, build_session_factory
-from academic_edge_domain.policy import SourcePolicyRegistry, load_registry
 
 
 @lru_cache(maxsize=8)

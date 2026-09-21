@@ -6,12 +6,16 @@ import datetime as dt
 from typing import Annotated
 from uuid import UUID
 
+from academic_edge_domain import models
+from academic_edge_domain.db import ping
+from academic_edge_domain.ids import encode_cursor
+from academic_edge_domain.policy import SourcePolicyRegistry
+from academic_edge_domain.time import seconds_between, utcnow
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from academic_edge_api.deps import get_registry, get_session
-from academic_edge_api.observability import Timer, log_event, new_correlation_id
 from academic_edge_api.pagination import Page, clamp_page_size, decode_request_cursor
 from academic_edge_api.schemas import (
     EventOut,
@@ -27,11 +31,6 @@ from academic_edge_api.services import (
     lookup_names,
 )
 from academic_edge_api.settings import Settings, get_settings
-from academic_edge_domain import models
-from academic_edge_domain.db import ping
-from academic_edge_domain.ids import encode_cursor
-from academic_edge_domain.policy import SourcePolicyRegistry
-from academic_edge_domain.time import seconds_between, utcnow
 
 router = APIRouter()
 

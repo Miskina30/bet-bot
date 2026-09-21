@@ -14,6 +14,7 @@ from collections.abc import Iterator
 from typing import Annotated
 from uuid import UUID
 
+from academic_edge_domain import models
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -22,7 +23,6 @@ from sse_starlette.sse import EventSourceResponse
 from academic_edge_api.deps import get_session
 from academic_edge_api.routers.insights import _opportunity_out
 from academic_edge_api.security import current_role
-from academic_edge_domain import models
 
 router = APIRouter()
 HEARTBEAT_SECONDS = 15

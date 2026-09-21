@@ -12,8 +12,6 @@ import datetime as dt
 import uuid
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
-
 from academic_edge_domain.enums import (
     AlertSeverity,
     AlertStatus,
@@ -25,10 +23,10 @@ from academic_edge_domain.enums import (
     OpportunityType,
     OutcomeKind,
     ReviewStatus,
-    SettlementStatus,
     TeamScope,
     VenueKind,
 )
+from pydantic import BaseModel, Field
 
 
 class SourceHealthOut(BaseModel):

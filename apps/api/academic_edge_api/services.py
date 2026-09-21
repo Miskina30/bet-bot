@@ -10,12 +10,11 @@ from __future__ import annotations
 import datetime as dt
 import uuid
 
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
-
 from academic_edge_domain import models
 from academic_edge_domain.enums import FreshnessLabel
-from academic_edge_domain.time import seconds_between, utcnow
+from academic_edge_domain.time import seconds_between
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
 
 def event_provider_ids(session: Session, event_id: uuid.UUID) -> dict[str, str]:
@@ -46,7 +45,9 @@ def lookup_names(
     )
 
 
-def freshness_of(observed_at: dt.datetime, now: dt.datetime, max_age_seconds: int) -> FreshnessLabel:
+def freshness_of(
+    observed_at: dt.datetime, now: dt.datetime, max_age_seconds: int
+) -> FreshnessLabel:
     """fresh (< 1/3), aging (< window), stale (>= window)."""
     age = max(0.0, seconds_between(now, observed_at))
     third = max_age_seconds / 3.0
@@ -65,24 +66,21 @@ def competition_name_by_id(session: Session, competition_id: uuid.UUID) -> str:
 def outcome_counts(session: Session, market_id: uuid.UUID) -> int:
     return (
         session.scalar(
-            select(func.count()).select_from(models.Outcome).where(models.Outcome.market_id == market_id)
+            select(func.count())
+            .select_from(models.Outcome)
+            .where(models.Outcome.market_id == market_id)
         )
         or 0
     )
 
 
-def latest_quotes(
-    session: Session, market_id: uuid.UUID, as_of: dt.datetime
-) -> list[models.Quote]:
+def latest_quotes(session: Session, market_id: uuid.UUID, as_of: dt.datetime) -> list[models.Quote]:
     """Newest quote per outcome for one market (as of ``as_of``)."""
-    quotes = (
-        session.scalars(
-            select(models.Quote)
-            .where(models.Quote.market_id == market_id, models.Quote.observed_at <= as_of)
-            .order_by(models.Quote.observed_at.desc())
-        )
-        .all()
-    )
+    quotes = session.scalars(
+        select(models.Quote)
+        .where(models.Quote.market_id == market_id, models.Quote.observed_at <= as_of)
+        .order_by(models.Quote.observed_at.desc())
+    ).all()
     seen: set[uuid.UUID] = set()
     newest: list[models.Quote] = []
     for quote in quotes:

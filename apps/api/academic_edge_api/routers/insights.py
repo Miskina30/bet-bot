@@ -6,6 +6,10 @@ import datetime as dt
 from typing import Annotated
 from uuid import UUID
 
+from academic_edge_domain import models
+from academic_edge_domain.enums import AlertStatus, FreshnessLabel, ReviewStatus, Role
+from academic_edge_domain.ids import encode_cursor
+from academic_edge_domain.time import seconds_between, utcnow
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -24,19 +28,12 @@ from academic_edge_api.schemas import (
     ReviewItemOut,
 )
 from academic_edge_api.security import current_role, require_role
-from academic_edge_domain import models
-from academic_edge_domain.enums import AlertStatus, FreshnessLabel, ReviewStatus, Role
-from academic_edge_domain.ids import encode_cursor
-from academic_edge_domain.time import seconds_between, utcnow
 
 router = APIRouter()
 
 
 def _opportunity_out(session: Session, opportunity: models.Opportunity) -> OpportunityOut:
     market = session.get(models.Market, opportunity.market_id)
-    outcome_rows = session.scalars(
-        select(models.Outcome).where(models.Outcome.market_id == opportunity.market_id)
-    ).all()
     now = utcnow()
     legs: list[OpportunityLegOut] = []
     for leg in opportunity.best_legs or []:
@@ -134,7 +131,9 @@ def list_opportunities(
     return Page(items=items, next_cursor=next_cursor, partial=False)
 
 
-@router.get("/opportunities/{opportunity_id}", response_model=OpportunityOut, summary="Opportunity detail")
+@router.get(
+    "/opportunities/{opportunity_id}", response_model=OpportunityOut, summary="Opportunity detail"
+)
 def get_opportunity(
     opportunity_id: UUID,
     session: Annotated[Session, Depends(get_session)],
@@ -182,7 +181,10 @@ def review_queue(
         before, last_id = decoded
         statement = statement.where(
             (models.ProviderEventMap.created_at < before)
-            | ((models.ProviderEventMap.created_at == before) & (models.ProviderEventMap.id < last_id))
+            | (
+                (models.ProviderEventMap.created_at == before)
+                & (models.ProviderEventMap.id < last_id)
+            )
         )
     if status:
         statement = statement.where(models.ProviderEventMap.review_status == status)
@@ -196,7 +198,11 @@ def review_queue(
     return Page(items=items, next_cursor=next_cursor, partial=False)
 
 
-@router.post("/resolver/review/{map_id}/decision", response_model=ReviewItemOut, summary="Manual resolution decision")
+@router.post(
+    "/resolver/review/{map_id}/decision",
+    response_model=ReviewItemOut,
+    summary="Manual resolution decision",
+)
 def review_decision(
     map_id: UUID,
     body: ReviewDecisionIn,
@@ -230,7 +236,11 @@ def review_decision(
     return _review_out(session, row)
 
 
-@router.get("/predictions/{event_id}", response_model=list[PredictionOut], summary="Model probabilities for one event")
+@router.get(
+    "/predictions/{event_id}",
+    response_model=list[PredictionOut],
+    summary="Model probabilities for one event",
+)
 def predictions_for_event(
     event_id: UUID,
     session: Annotated[Session, Depends(get_session)],
@@ -264,7 +274,11 @@ def predictions_for_event(
     return items
 
 
-@router.get("/models/metrics", response_model=list[ModelMetricsOut], summary="Walk-forward metrics per model")
+@router.get(
+    "/models/metrics",
+    response_model=list[ModelMetricsOut],
+    summary="Walk-forward metrics per model",
+)
 def models_metrics(
     session: Annotated[Session, Depends(get_session)],
     role: Annotated[object, Depends(current_role)],
@@ -285,7 +299,9 @@ def models_metrics(
                 "start": row.calibration_window_start.isoformat()
                 if row.calibration_window_start
                 else None,
-                "end": row.calibration_window_end.isoformat() if row.calibration_window_end else None,
+                "end": row.calibration_window_end.isoformat()
+                if row.calibration_window_end
+                else None,
             },
             metrics=row.metrics or {},
             is_active=row.is_active,
@@ -341,7 +357,9 @@ def list_alerts(
     return Page(items=items, next_cursor=next_cursor, partial=False)
 
 
-@router.post("/alerts/{alert_id}/acknowledge", response_model=AlertOut, summary="Acknowledge an alert")
+@router.post(
+    "/alerts/{alert_id}/acknowledge", response_model=AlertOut, summary="Acknowledge an alert"
+)
 def acknowledge_alert(
     alert_id: UUID,
     body: AlertAcknowledgeIn,
@@ -384,7 +402,10 @@ def paper_ledger(
         before, last_id = decoded
         statement = statement.where(
             (models.PaperLedgerEntry.placed_at < before)
-            | ((models.PaperLedgerEntry.placed_at == before) & (models.PaperLedgerEntry.id < last_id))
+            | (
+                (models.PaperLedgerEntry.placed_at == before)
+                & (models.PaperLedgerEntry.id < last_id)
+            )
         )
     statement = statement.limit(size + 1)
 

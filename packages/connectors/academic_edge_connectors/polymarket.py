@@ -307,8 +307,7 @@ def _build_gamma_market(
         extras={
             "question": question,
             "settlement_rule": (
-                "Prediction-market resolution; see the market page. "
-                "One venue, never ground truth."
+                "Prediction-market resolution; see the market page. One venue, never ground truth."
             ),
         },
     )

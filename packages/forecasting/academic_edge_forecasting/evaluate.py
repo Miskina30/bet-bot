@@ -10,7 +10,6 @@ from __future__ import annotations
 import math
 from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Any
 
 from academic_edge_forecasting.elo import MatchResult
 

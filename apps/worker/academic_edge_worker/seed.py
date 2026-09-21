@@ -27,6 +27,7 @@ def seed_database(*, db_url: str | None = None) -> dict[str, int]:
     _refuse_production(url)
     engine = create_engine(url, echo=False)
     import academic_edge_domain.models  # noqa: F401  (registers tables on Base)
+
     Base.metadata.create_all(engine)
     session = sessionmaker(bind=engine)()
     try:
@@ -49,9 +50,10 @@ def _refuse_production(db_url: str) -> None:
 
 def _fixture_price(source_id: str, outcome_kind: str) -> Decimal:
     """Deterministic pseudo-price: crc32 is stable across processes, so the
-demo is reproducible. Never pretend this is a live market."""
+    demo is reproducible. Never pretend this is a live market."""
     key = f"{source_id}:{outcome_kind}".encode()
     return Decimal("2.0") + Decimal(str((zlib.crc32(key) % 90) / 100.0))
+
 
 def _seed(session: Any) -> dict[str, int]:
     from academic_edge_domain.enums import (
@@ -91,12 +93,18 @@ def _seed(session: Any) -> dict[str, int]:
     session.flush()
 
     comp1 = Competition(
-        sport_id=sport.id, canonical_key="premier-league", name="Premier League",
-        country="England", is_synthetic=True,
+        sport_id=sport.id,
+        canonical_key="premier-league",
+        name="Premier League",
+        country="England",
+        is_synthetic=True,
     )
     comp2 = Competition(
-        sport_id=sport.id, canonical_key="serie-a", name="Serie A",
-        country="Italy", is_synthetic=True,
+        sport_id=sport.id,
+        canonical_key="serie-a",
+        name="Serie A",
+        country="Italy",
+        is_synthetic=True,
     )
     session.add_all([comp1, comp2])
     session.flush()
@@ -107,12 +115,16 @@ def _seed(session: Any) -> dict[str, int]:
     session.flush()
 
     venue1 = Venue(
-        canonical_key="old-trafford", name="FIXTURE: Old Trafford",
-        city="Manchester", country="England",
+        canonical_key="old-trafford",
+        name="FIXTURE: Old Trafford",
+        city="Manchester",
+        country="England",
     )
     venue2 = Venue(
-        canonical_key="san-siro", name="FIXTURE: San Siro",
-        city="Milan", country="Italy",
+        canonical_key="san-siro",
+        name="FIXTURE: San Siro",
+        city="Milan",
+        country="Italy",
     )
     session.add_all([venue1, venue2])
     session.flush()
@@ -181,15 +193,8 @@ def _seed(session: Any) -> dict[str, int]:
     quotes_created = 0
     for event in events:
         for market_type, kinds in market_specs:
-            line = (
-                Decimal("2.5")
-                if market_type == MarketType.FT_TOTALS_2_5
-                else Decimal("0")
-            )
-            identity = (
-                f"{event.id}:{market_type.value}:full_time:{line}"
-                ":neutral:false:v1"
-            )
+            line = Decimal("2.5") if market_type == MarketType.FT_TOTALS_2_5 else Decimal("0")
+            identity = f"{event.id}:{market_type.value}:full_time:{line}:neutral:false:v1"
             market = Market(
                 event_id=event.id,
                 sport_id=event.sport_id,
@@ -209,8 +214,7 @@ def _seed(session: Any) -> dict[str, int]:
             markets_created += 1
 
             outcomes = [
-                Outcome(market_id=market.id, outcome_kind=kind, label=kind.value)
-                for kind in kinds
+                Outcome(market_id=market.id, outcome_kind=kind, label=kind.value) for kind in kinds
             ]
             session.add_all(outcomes)
             session.flush()
@@ -225,9 +229,7 @@ def _seed(session: Any) -> dict[str, int]:
                             source_id=source_id,
                             venue_kind=venue_kind,
                             venue_name=venue_name,
-                            decimal_odds=_fixture_price(
-                                source_id, str(outcome.outcome_kind)
-                            ),
+                            decimal_odds=_fixture_price(source_id, str(outcome.outcome_kind)),
                             currency="EUR",
                             observed_at=now - dt.timedelta(seconds=30),
                             received_at=now,

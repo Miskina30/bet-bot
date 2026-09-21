@@ -33,6 +33,8 @@ YOUR IMMEDIATE NEXT STEPS (in order, from HANDOFF.md "OPEN WORK" section):
    The render body needs: SectionPanel with the health table, degraded-source banner,
    EmptyBlock when no sources, and the one-paragraph runbook. Look at
    apps/web/src/app/page.tsx for the exact component/style patterns to follow.
+   ~~STATUS UPDATE 2026-09-18: sources/page.tsx is now COMPLETE (render body done,
+   verified by inspection). Start here instead: alerts/page.tsx.~~
 2. Create the remaining Next.js pages: alerts/page.tsx, resolver/page.tsx,
    predictions/page.tsx, ledger/page.tsx, opportunities/[id]/page.tsx (detail view),
    and the analyst-proxy API route handlers

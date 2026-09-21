@@ -9,10 +9,9 @@ from __future__ import annotations
 
 import datetime as dt
 from dataclasses import dataclass, field
-from decimal import Decimal
 from typing import Any
 
-from academic_edge_domain.time import ensure_utc, utcnow
+from academic_edge_domain.time import utcnow
 
 
 def decay_weight(age_days: float, half_life_days: float = 180.0) -> float:
@@ -113,7 +112,7 @@ class FormTracker:
             return 0.0
         numerator: float = 0.0
         denominator: float = 0.0
-        for record, weight in zip(self._results, self._weights):
+        for record, weight in zip(self._results, self._weights, strict=True):
             if weight < min_weight:
                 continue
             if record.home_team == team:
@@ -128,7 +127,7 @@ class FormTracker:
         """Weighted goals scored per match (team-attack strength)."""
         return self.weighted_rate(
             team,
-            lambda r: (r.home_goals if r.home_team == team else r.away_goals),
+            lambda r: r.home_goals if r.home_team == team else r.away_goals,
             min_weight=min_weight,
         )
 
@@ -136,7 +135,7 @@ class FormTracker:
         """Weighted goals conceded per match (team-defence weakness)."""
         return self.weighted_rate(
             team,
-            lambda r: (r.away_conceded if r.home_team == team else r.home_conceded),
+            lambda r: r.away_conceded if r.home_team == team else r.home_conceded,
             min_weight=min_weight,
         )
 
@@ -156,7 +155,5 @@ class FormTracker:
         """Average goals scored per match across the tracked window."""
         if not self._results:
             return 0.0
-        league_total = sum(
-            r.home_goals + r.away_goals for r in self._results
-        )
+        league_total = sum(r.home_goals + r.away_goals for r in self._results)
         return league_total / (len(self._results) * 2)
