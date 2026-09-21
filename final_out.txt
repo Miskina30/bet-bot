@@ -1,9 +1,0 @@
-Traceback (most recent call last):
-  File "C:\Users\Anania Light Laptop\projects\academic-edge\scripts\final_deploy.py", line 69, in main
-    out.append(delete_remote_file(client, token, path))
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Anania Light Laptop\projects\academic-edge\scripts\final_deploy.py", line 47, in delete_remote_file
-    d = client.delete(
-        ^^^^^^^^^^^^^^
-TypeError: Client.delete() got an unexpected keyword argument 'json'
-
