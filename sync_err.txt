@@ -1,1 +1,0 @@
-ERROR: set GH_TOKEN env var first. Refusing to run without it.
